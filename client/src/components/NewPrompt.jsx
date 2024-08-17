@@ -3,12 +3,14 @@ import Upload from "./Upload";
 import { IKImage } from "imagekitio-react";
 import model from "../lib/gemini";
 import Markdown from "react-markdown";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const NewPrompt = () => {
+const NewPrompt = ({ data }) => {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
 
   const endRef = useRef(null);
+  const formRef = useRef(null);
 
   const [img, setImg] = useState({
     isLoading: false,
@@ -37,10 +39,42 @@ const NewPrompt = () => {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [question, answer, img.dbData]);
+  }, [data, question, answer, img.dbData]);
 
-  const addMessage = async (text) => {
-    setQuestion(text);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: () => {
+      return fetch(`${import.meta.env.VITE_API_URL}/api/chats/${data._id}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          question: question.length ? question : undefined,
+          answer,
+          img: img.dbData?.filePath || undefined,
+        }),
+      }).then((res) => res.json());
+    },
+    onSuccess: () => {
+      queryClient
+        .invalidateQueries({ queryKey: ["chat", data._id] })
+        .then(() => {
+          formRef.current.reset();
+          setQuestion("");
+          setAnswer("");
+          setImg({ isLoading: false, error: "", dbData: {}, aiData: {} });
+        });
+    },
+    onError: (err) => {
+      console.log(err);
+    },
+  });
+
+  const addMessage = async (text, isInitial) => {
+    if (!isInitial) setQuestion(text);
     setAnswer(""); // Clear the previous answer stored in the state
     try {
       let accumulatedText = "";
@@ -56,14 +90,9 @@ const NewPrompt = () => {
         setAnswer((prev) => prev + chunkText);
       }
 
-      // Optionally, finalize the img state if needed
-      setImg({
-        isLoading: false,
-        error: "",
-        dbData: {},
-        aiData: {},
-      });
+      mutation.mutate();
     } catch (error) {
+      console.log(error);
       setAnswer("Oops! Something went wrong. Please try again.");
     }
   };
@@ -72,9 +101,20 @@ const NewPrompt = () => {
     e.preventDefault();
     const text = e.target.text.value.trim();
     if (!text) return;
-    addMessage(text);
+    addMessage(text, false);
     e.target.text.value = "";
   };
+  //In Production we don't need it because it loads our page one time only but now it will run twice and useEffect will run twice so we use hasRun.
+  const hasRun = useRef(false);
+
+  useEffect(() => {
+    if (!hasRun.current) {
+      if (data?.history?.length === 1) {
+        addMessage(data.history[0].parts[0].text, true);
+      }
+    }
+    hasRun.current = true;
+  }, []);
 
   return (
     <>
@@ -102,6 +142,7 @@ const NewPrompt = () => {
       <form
         className="newForm w-11/12 md:w-2/3 lg:w-1/2 mx-auto bottom-4 left-1/2 transform -translate-x-1/2 bg-[#2c2937] rounded-full flex items-center gap-4  px-2 shadow-lg absolute"
         onSubmit={handleSubmit}
+        ref={formRef}
       >
         <Upload setImg={setImg} />
         <input type="file" multiple={false} id="file" hidden />

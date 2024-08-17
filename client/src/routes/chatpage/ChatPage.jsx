@@ -37,7 +37,7 @@ const ChatPage = () => {
   }
 
   return (
-    <div className="chatpage h-full flex flex-col items-center relative">
+    <div className="chatpage h-full flex flex-col items-center relative p-4">
       <div className="wrapper flex-1 overflow-y-scroll no-scrollbar w-full flex justify-center">
         <div className="chat w-1/2 flex flex-col gap-5">
           {data?.history && data.history.length > 0 ? (
@@ -67,7 +67,7 @@ const ChatPage = () => {
           ) : (
             <div>No messages found.</div>
           )}
-          <NewPrompt />
+          {data && <NewPrompt data={data} />}
         </div>
       </div>
     </div>

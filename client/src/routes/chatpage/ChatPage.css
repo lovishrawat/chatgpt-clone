@@ -1,6 +1,7 @@
 .message{
 
-  padding:14px;
+  padding-left:10px;
+  padding-right:10px;
 
   &.user{
     background-color: #2c2937;
