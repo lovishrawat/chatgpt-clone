@@ -36,26 +36,35 @@ const DashboardPage = () => {
         <div className="logo flex items-center gap-5 opacity-20">
           <img src="/logo.png" className="w-16 h-16" alt="" />
           <h1 className="font-semibold text-6xl lg:text-6xl">
-            <span className="bg-clip-text   bg-gradient-to-r from-purple-500 to-pink-500 text-transparent ">
+            <span className="bg-clip-text   bg-white text-transparent ">
               VISH
             </span>
-            <span className="bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 text-transparent">
-              {" "}
-              AI
-            </span>
+            <span className="bg-clip-text bg-white text-transparent"> AI</span>
           </h1>
         </div>
-        <div className="options w-full flex items-center justify-between gap-12">
+        <div className="options w-full flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 p-4">
           <div className="option flex-1 flex flex-col gap-2 font-light text-[14px] p-5 border border-gray-500 rounded-2xl">
-            <img className="w-10 h-10 object-cover" src="/chat.png" alt="" />
+            <img
+              className="w-10 h-10 object-cover"
+              src="/chat.png"
+              alt="Create a new chat"
+            />
             <span>Create a new chat</span>
           </div>
           <div className="option flex-1 flex flex-col gap-2 font-light text-[14px] p-5 border border-gray-500 rounded-2xl">
-            <img className="w-10 h-10 object-cover" src="/image.png" alt="" />
+            <img
+              className="w-10 h-10 object-cover"
+              src="/image.png"
+              alt="Analyzes Images"
+            />
             <span>Analyzes Images</span>
           </div>
           <div className="option flex-1 flex flex-col gap-2 font-light text-[14px] p-5 border border-gray-500 rounded-2xl">
-            <img className="w-10 h-10 object-cover" src="/code.png" alt="" />
+            <img
+              className="w-10 h-10 object-cover"
+              src="/code.png"
+              alt="Help with my code"
+            />
             <span>Help with my code</span>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "react-router-dom";
 import Markdown from "react-markdown";
 import { IKImage } from "imagekitio-react";
+import remarkGfm from "remark-gfm";
 
 const ChatPage = () => {
   const path = useLocation().pathname;
@@ -60,7 +61,9 @@ const ChatPage = () => {
                   }`}
                   key={i}
                 >
-                  <Markdown>{message.parts[0].text}</Markdown>
+                  <Markdown remarkPlugins={[remarkGfm]}>
+                    {message.parts[0].text}
+                  </Markdown>
                 </div>
               </>
             ))
